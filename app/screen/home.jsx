@@ -5,21 +5,27 @@ import {
   View,
   ImageBackground,
   TextInput,
+  Dimensions,
   Pressable,
   ToastAndroid,
-  TouchableOpacity,
 } from "react-native";
+import { useNavigation, Tabs } from "expo-router";
+import { Link } from 'expo-router';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { idText } from "typescript";
 
 const Home = () => {
+  const navigation = useNavigation();
   const [isFocused, setIsFocused] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otp, setOtp] = useState("");
+
   const sentOtp = async () => {
     try {
       ToastAndroid.showWithGravity(
         `OTP Sent To : ${mobileNumber}`,
         ToastAndroid.SHORT,
-        ToastAndroid.TOP
+        ToastAndroid.CENTER
       );
       console.log("Mobile Number :", mobileNumber);
     } catch (error) {
@@ -42,112 +48,40 @@ const Home = () => {
     }
   };
   return (
-      <View style={styles.blurView}>
-        <View style={styles.inputParentView}>
-          <View style={styles.inputView}>
-            <Text
-              style={styles.inputText}
-              aria-label="Label for Mobile Number"
-              nativeID="mobileNumber"
-            >
-              Mobile Number sign up :
-            </Text>
-            <TextInput
-              aria-label="input"
-              aria-labelledby="mobileNumber"
-              style={[styles.input, isFocused && styles.inputFocused]}
-              onChangeText={(e) => setMobileNumber(e)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              value={mobileNumber}
-              keyboardType="numeric"
-            />
-          </View>
-          <Pressable onPress={() => sentOtp()}>
-            <Text style={styles.sentButton}>Get OTP</Text>
-          </Pressable>
-          <View style={styles.inputView}>
-            <Text
-              style={styles.inputText}
-              aria-label="Label for Mobile Number"
-              nativeID="mobileNumber"
-            >
-              OTP sign up :
-            </Text>
-            <TextInput
-              aria-label="input"
-              aria-labelledby="otp"
-              style={[styles.input, isFocused && styles.inputFocused]}
-              onChangeText={(e) => setOtp(e)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              value={otp}
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.buttonView}>
-            <Pressable onPress={() => verify()}>
-              <Text style={styles.submitButton}>Submit</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setOtp("");
-                setMobileNumber("");
-              }}
-            >
-              <Text style={styles.submitButton}>Cancel</Text>
-            </Pressable>
-            <TouchableOpacity
-            onPress={() => navigation.navigate("loginEmail")}
-          >
-            <Text>
-            anothjerbhbhhhjbjhb
-            </Text>
-          </TouchableOpacity>
-          </View>
-        </View>
+    <SafeAreaView>
+      <View style={styles.idBlock}>
+        <Text style={styles.idText}>Trip Id:1234545</Text>
       </View>
-  );
+      <View>
+        <Text>Site: Google</Text>
+        <Text>Login: 6:45</Text>
+        <Text>01/01/2024 04:00 AM</Text>
+      </View>
+
+      <View style={styles.tabView}>
+        <Pressable onPress={() => verify()}>
+          <Text style={styles.tabButton}>Route Map</Text>
+        </Pressable>
+        <Pressable onPress={() => verify()}>
+          <Text style={styles.tabButton}>Employees</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  )
 };
 
 const styles = StyleSheet.create({
-  bgImage: {
-    height: "100%",
+  idBlock: {
+    borderBottomWidth: 1,
+    borderColor: "grey",
+    padding: 10,
+
+
   },
-  blurView: {
-    backdropFilter: "blur(1px)",
-    background: "transparent",
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 30,
-  },
-  inputParentView: {
-    padding: 20,
-    backgroundColor: "rgba(0,0,0, 0.4)",
-  },
-  inputView: {
-    flexDirection: "row",
-    gap: 6,
-    justifyContent: "center",
-  },
-  inputText: {
-    color: "#FFF",
-    padding: 5,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    borderColor: "gray",
-    borderRadius: 5,
-  },
-  input: {
-    borderWidth: 0,
-    flex: 1,
-    borderBottomWidth: 2,
-    borderColor: "#FFF",
-    color: "#FFF",
-    paddingHorizontal: 5,
-  },
-  inputFocused: {
-    borderWidth: 0,
+  idText: {
+    // fontSize:"100px",
+    // margin: 20,
+    color: "blue",
   },
   sentButton: {
     color: "green",
@@ -156,19 +90,30 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 5,
   },
-  buttonView: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  tabView: {
+    flexDirection: 'row',
+    // alignItems: "flex-start",
+    // justifyContent: "center",
+
     marginTop: 20,
-    gap: 10,
-  },
-  submitButton: {
-    paddingHorizontal: 20,
     paddingVertical: 10,
-    color: "#FFF",
-    backgroundColor: "#162F4E",
+    gap: 1,
+    borderRadius: 20,
+    borderColor: 'gray',
+    borderWidth: 1,
+    backgroundColor: "#FFFF",
+    marginRight: 'auto',
+
+
+  },
+  tabButton: {
+    flexDirection: 'column',
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    color: "black",
     fontWeight: "600",
+    borderLeftWidth: 2
+
   },
 });
 
