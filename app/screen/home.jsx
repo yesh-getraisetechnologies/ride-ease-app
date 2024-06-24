@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   idText: {
-    color: "#143153",
+    color: "#1565C0",
   },
   colorBlue: {
     color: "#1E88E5",
