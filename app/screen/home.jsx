@@ -12,23 +12,26 @@ const Home = () => {
       <View style={styles.idBlock}>
         <Text style={styles.idText}>Trip Id:1234545</Text>
       </View>
-      <View>
-        <Text>Site: Google</Text>
-        <Text>Login: 6:45</Text>
-        <Text>01/01/2024 04:00 AM</Text>
-      </View>
-      <View>
-        <View style={styles.tabView}>
-          <Pressable onPress={() => setTab(1)}>
-            <Text style={[styles.tabButton]}>Route Map</Text>
-          </Pressable>
-          <Pressable onPress={() => setTab(2)}>
-            <Text style={[styles.tabButton, { borderRightWidth: 0 }]}>
-              Employees
-            </Text>
-          </Pressable>
+      <View style={styles.mainView}>
+        <View style={styles.info}>
+          <View style={styles.infoRow}>
+            <Text style={styles.site}>Site: Google</Text>
+            <Text style={styles.loginTime}>Login: 6:45</Text>
+            <Text style={styles.dateTime}>01/01/2024 04:00 AM</Text>
+          </View>
+          <View style={styles.tabField}>
+            <View style={styles.tabView}>
+              <Pressable onPress={() => setTab(1)}>
+                <Text style={styles.tabButton}>Route Map</Text>
+              </Pressable>
+              <Pressable onPress={() => setTab(2)}>
+                <Text style={[styles.tabButton, { borderRightWidth: 0 }]}>Employees</Text>
+              </Pressable>
+            </View>
+            {tab === 1 ? <RouteForRide /> : <Employee />}
+          </View>
         </View>
-        {tab === 1 ? <RouteForRide /> : <Employee />}
+
       </View>
     </SafeAreaView>
   );
@@ -37,12 +40,44 @@ const Home = () => {
 const styles = StyleSheet.create({
   idBlock: {
     borderBottomWidth: 1,
+    backgroundColor: "#ffff",
     borderColor: "grey",
     padding: 10,
   },
   idText: {
-    color: "blue",
+    color: "#143153",
   },
+  mainView: {
+    padding: 7,
+    backgroundColor: "#ffff"
+  },
+  info: {
+    display: "flex",
+    paddingHorizontal:5,
+    padding: 14,
+    paddingTop:5,
+    borderColor: "#C7C7C7",
+    borderWidth: 3,
+    borderRadius:5,
+    backgroundColor: "#E8EEF4"
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: 10,
+  },
+  site: {
+    color: "green",
+  },
+  loginTime: {
+    color: "orange",
+    marginLeft: 10,
+  },
+  dateTime: {
+    marginLeft: 10,
+  },
+
   sentButton: {
     color: "green",
     fontWeight: "700",
@@ -50,9 +85,15 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 5,
   },
+  tabField:{
+    backgroundColor:"#ffff",
+    borderRadius:10,
+    padding:5,
+
+  },
   tabView: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 5,
     paddingVertical: 10,
     gap: 1,
     borderRadius: 20,
@@ -64,9 +105,9 @@ const styles = StyleSheet.create({
   tabButton: {
     flexDirection: "column",
     paddingHorizontal: 20,
-    paddingVertical: 5,
+    paddingVertical: 3,
     color: "black",
-    fontWeight: "600",
+    fontWeight: "500",
     borderRightWidth: 2,
   },
 });
