@@ -9,7 +9,6 @@ import {
   Pressable,
   ToastAndroid,
 } from "react-native";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 const App = () => {
   const [isFocused, setIsFocused] = useState(false);
@@ -17,22 +16,6 @@ const App = () => {
   const [otp, setOtp] = useState("");
   const sentOtp = async () => {
     try {
-      if (!mobileNumber) {
-        <ErrorToast
-          {...internalState}
-          text1Style={{
-            fontSize: 17,
-          }}
-          text2Style={{
-            fontSize: 15,
-          }}
-        />;
-      }
-      Toast.show({
-        type: "success",
-        text1: "Hello",
-        text2: "This is a success message 👋",
-      });
       ToastAndroid.showWithGravity(
         `OTP Sent To : ${mobileNumber}`,
         ToastAndroid.SHORT,
@@ -59,8 +42,6 @@ const App = () => {
     }
   };
   return (
-    <>
-     <Toast ref={(ref) => Toast.setRef(ref)} />
     <ImageBackground
       style={styles.bgImage}
       source={require("../assets/images/back-ground-image.jpg")}
@@ -124,8 +105,6 @@ const App = () => {
         </View>
       </View>
     </ImageBackground>
-    </>
-
   );
 };
 
