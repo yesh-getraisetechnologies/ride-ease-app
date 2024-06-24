@@ -22,16 +22,25 @@ const Home = () => {
           <View style={styles.tabField}>
             <View style={styles.tabView}>
               <Pressable onPress={() => setTab(1)}>
-                <Text style={styles.tabButton}>Route Map</Text>
+                <Text style={[styles.tabButton, tab === 1 && styles.colorBlue]}>
+                  Route Map
+                </Text>
               </Pressable>
               <Pressable onPress={() => setTab(2)}>
-                <Text style={[styles.tabButton, { borderRightWidth: 0 }]}>Employees</Text>
+                <Text
+                  style={[
+                    styles.tabButton,
+                    styles.border__right_0,
+                    tab === 2 && styles.colorBlue,
+                  ]}
+                >
+                  Employees
+                </Text>
               </Pressable>
             </View>
             {tab === 1 ? <RouteForRide /> : <Employee />}
           </View>
         </View>
-
       </View>
     </SafeAreaView>
   );
@@ -47,19 +56,25 @@ const styles = StyleSheet.create({
   idText: {
     color: "#143153",
   },
+  colorBlue: {
+    color: "blue",
+  },
+  border__right_0:{
+    borderRightWidth: 0
+  },
   mainView: {
     padding: 7,
-    backgroundColor: "#ffff"
+    backgroundColor: "#ffff",
   },
   info: {
     display: "flex",
-    paddingHorizontal:5,
+    paddingHorizontal: 5,
     padding: 14,
-    paddingTop:5,
+    paddingTop: 5,
     borderColor: "#C7C7C7",
     borderWidth: 3,
-    borderRadius:5,
-    backgroundColor: "#E8EEF4"
+    borderRadius: 5,
+    backgroundColor: "#E8EEF4",
   },
   infoRow: {
     flexDirection: "row",
@@ -85,11 +100,10 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginRight: 5,
   },
-  tabField:{
-    backgroundColor:"#ffff",
-    borderRadius:10,
-    padding:5,
-
+  tabField: {
+    backgroundColor: "#ffff",
+    borderRadius: 10,
+    padding: 5,
   },
   tabView: {
     flexDirection: "row",
