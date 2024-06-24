@@ -9,29 +9,29 @@ export default function Employee() {
       <View style={styles.listView}>
         <Text>Ravi Shankar - 9887764567</Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <Feather name="phone-call" size={24} color="blue" />
-          <AntDesign name="pluscircleo" size={24} color="black" />
+          <Feather name="phone-call" size={18} color="#1E88E5" />
+          <AntDesign name="pluscircleo" size={18} color="black" />
         </View>
       </View>
       <View style={styles.listView}>
         <Text>Ravi Shankar - 9887764567</Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <Feather name="phone-call" size={24} color="blue" />
-          <AntDesign name="pluscircleo" size={24} color="black" />
+          <Feather name="phone-call" size={18} color="#1E88E5" />
+          <AntDesign name="pluscircleo" size={18} color="black" />
         </View>
       </View>
       <View style={styles.listView}>
         <Text>Ravi Shankar - 9887764567</Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <Feather name="phone-call" size={24} color="blue" />
-          <AntDesign name="pluscircleo" size={24} color="black" />
+          <Feather name="phone-call" size={18} color="#1E88E5" />
+          <AntDesign name="pluscircleo" size={18} color="black" />
         </View>
       </View>
       <View style={styles.listView}>
         <Text>Ravi Shankar - 9887764567</Text>
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <Feather name="phone-call" size={24} color="blue" />
-          <AntDesign name="pluscircleo" size={24} color="black" />
+          <Feather name="phone-call" size={18} color="#1E88E5" />
+          <AntDesign name="pluscircleo" size={18} color="black" />
         </View>
       </View>
     </View>

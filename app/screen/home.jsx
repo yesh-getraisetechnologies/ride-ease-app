@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     color: "#143153",
   },
   colorBlue: {
-    color: "blue",
+    color: "#1E88E5",
   },
-  border__right_0:{
-    borderRightWidth: 0
+  border__right_0: {
+    borderRightWidth: 0,
   },
   mainView: {
     padding: 7,
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     margin: 10,
+    gap: 5,
   },
   site: {
     color: "green",
@@ -92,7 +93,6 @@ const styles = StyleSheet.create({
   dateTime: {
     marginLeft: 10,
   },
-
   sentButton: {
     color: "green",
     fontWeight: "700",
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   tabView: {
     flexDirection: "row",
     marginTop: 5,
-    paddingVertical: 10,
+    paddingVertical: 5,
     gap: 1,
     borderRadius: 20,
     borderColor: "gray",
@@ -118,8 +118,7 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flexDirection: "column",
-    paddingHorizontal: 20,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
     color: "black",
     fontWeight: "500",
     borderRightWidth: 2,
