@@ -39,6 +39,7 @@ const Login = () => {
         ToastAndroid.SHORT,
         ToastAndroid.TOP
       );
+      navigation.navigate("home");
     } catch (error) {
       console.error(error);
     }
@@ -103,9 +104,6 @@ const Login = () => {
             >
               <Text style={styles.submitButton}>Cancel</Text>
             </Pressable>
-            <TouchableOpacity onPress={() => navigation.navigate("home")}>
-              <Text style={{ color: "#FFF" }}>Home</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </View>
