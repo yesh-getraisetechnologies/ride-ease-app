@@ -7,7 +7,6 @@ import {
   TextInput,
   Pressable,
   ToastAndroid,
-  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "expo-router";
 
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
   },
   blurView: {
     backdropFilter: "blur(1px)",
-    background: "transparent",
+    backgroundColor: "transparent",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 30,
