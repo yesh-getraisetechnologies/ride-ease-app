@@ -6,15 +6,15 @@ import {
   Pressable,
   TextInput,
   ToastAndroid,
+  FlatList,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome, Entypo } from "@expo/vector-icons";
 import AccordianWrapper from "../components/accordian";
-import { FlatList } from "react-native";
 
 export default function Employee() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [otp, setOtp] = useState("");
   const [OTPSent, setOTPSent] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -23,7 +23,7 @@ export default function Employee() {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const Array = [1, 2, 3, 4, 5];
+  const data = [1, 2, 3, 4, 5];
 
   const optSentToEmployee = () => {
     try {
@@ -59,6 +59,8 @@ export default function Employee() {
         setOtp("");
         setOTPSent(false);
         setActiveIndex(null);
+        setVerified(true)
+        setSeconds(0)
         ToastAndroid.showWithGravity(
           "Mobile Number Verified!",
           ToastAndroid.SHORT,
@@ -97,7 +99,7 @@ export default function Employee() {
   return (
     <View style={styles.mainView}>
       <FlatList
-        data={Array}
+        data={data}
         nestedScrollEnabled={true}
         scrollEnabled={false}
         renderItem={({ item, index }) => (
@@ -116,6 +118,9 @@ export default function Employee() {
                   ) : (
                     <AntDesign name="pluscircleo" size={18} color="black" />
                   )}
+                  {
+                    verified ? <FontAwesome name="check-circle" size={18} color="#7BCB00" /> : <Entypo name="circle-with-cross" size={18} color="red" />
+                  }
                 </View>
               </View>
             }

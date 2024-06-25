@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome, Entypo } from '@expo/vector-icons';
 
 const RouteForRide = () => {
   return (
@@ -10,6 +10,7 @@ const RouteForRide = () => {
         <Icon name="location-on" size={20} color="#65696D" />
         <Text style={styles.text}>A S Rao Nagar</Text>
         <Feather name="navigation" size={18} color="#1E88E5" />
+        <FontAwesome name="check-circle" size={18} color="#7BCB00" />
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>|</Text>
@@ -18,6 +19,7 @@ const RouteForRide = () => {
         <Icon name="location-on" size={20} color="#65696D" />
         <Text style={styles.text}>Sainik Puri</Text>
         <Feather name="navigation" size={18} color="#1E88E5" />
+        <Entypo name="circle-with-cross" size={18} color="red" />
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>|</Text>
@@ -26,6 +28,7 @@ const RouteForRide = () => {
         <Icon name="location-on" size={20} color="#65696D" />
         <Text style={styles.text}>A S Rao Nagar</Text>
         <Feather name="navigation" size={18} color="#1E88E5" />
+        <FontAwesome name="check-circle" size={18} color="#7BCB00" />
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>|</Text>
@@ -34,6 +37,7 @@ const RouteForRide = () => {
         <Icon name="location-on" size={20} color="#65696D" />
         <Text style={styles.text}>Vayupuri</Text>
         <Feather name="navigation" size={18} color="#1E88E5" />
+        <FontAwesome name="check-circle" size={18} color="#7BCB00" />
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>|</Text>
@@ -42,6 +46,7 @@ const RouteForRide = () => {
         <Icon name="location-on" size={20} color="#65696D" />
         <Text style={styles.text}>Neredmet</Text>
         <Feather name="navigation" size={18} color="#1E88E5" />
+        <FontAwesome name="check-circle" size={18} color="#7BCB00" />
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>|</Text>
@@ -51,7 +56,7 @@ const RouteForRide = () => {
         <Text style={styles.text}>Hyd_GoogleGDO_Sar2</Text>
       </View>
       <View style={styles.buttonView}>
-        <Pressable onPress={() => { }}>
+        <Pressable onPress={() => console.log('------Navigate')}>
           <View style={styles.submitButton}>
             <Feather name="navigation" size={18} color="#FFF"/>
             <Text style={styles.buttonText}>Navigate</Text>
