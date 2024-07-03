@@ -11,7 +11,7 @@
 // import MapViewDirections from "react-native-maps-directions";
 // import { AuthContext } from "../context/authContext";
 
-// const API_KEY = "AIzaSyDexYcLe4DJ-XkXyUYjz_Y7b_L8e_L-Ruk";
+// const API_KEY = "bhhjb";
 
 // // Coordinates for Delhi
 // const center = {
