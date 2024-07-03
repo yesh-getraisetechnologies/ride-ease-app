@@ -13,7 +13,7 @@ import { HttpClient } from "../server/http";
 import Toast from 'react-native-toast-message';
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { saveToken } = useContext(AuthContext);
   const navigation = useNavigation();
   const [isFocused, setIsFocused] = useState(false);
   const [activeOTPInput, setActiveOTPInput] = useState(false);
@@ -63,15 +63,11 @@ const Login = () => {
             text1: "OTP must be 6 digit",
           });
         }
-        console.log("Mobile Number OTP :", otp);
-        const { token, userData } = await HttpClient.post("/driver/login", {
+        const { token } = await HttpClient.post("/driver/login", {
           phoneNumber: mobileNumber,
           otp,
         });
-        await login({
-          userData,
-          token,
-        });
+        await saveToken(token);
         setOtp("");
         setMobileNumber("");
         Toast.show({

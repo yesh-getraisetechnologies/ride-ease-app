@@ -27,6 +27,7 @@ const RouteForRide = () => {
         type: "success",
         text1: "Your Trip has been completed.",
       });
+      navigation.navigate('home')
     } catch (error) {
       Toast.show({
         type: "error",
@@ -76,7 +77,6 @@ const RouteForRide = () => {
         </View>
         <View style={styles.buttonView}>
           <Pressable 
-          // onPress={() => navigation.navigate("map")}
           onPress={() => console.log('--------- Navigate Button')}
           >
             <View style={styles.submitButton}>

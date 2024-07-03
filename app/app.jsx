@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { AuthContext } from "./context/authContext";
 import Login from "./screen/login";
 import Home from "./screen/home";
+import ActiveTrip from "./screen/activeTrip";
 // import Map from "./screen/map";
 
 const Stack = createStackNavigator();
@@ -22,6 +23,11 @@ const App = () => {
         <Stack.Screen
           name="home"
           component={Home}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="activeTrip"
+          component={ActiveTrip}
           options={{ headerShown: false }}
         />
         {/* <Stack.Screen
