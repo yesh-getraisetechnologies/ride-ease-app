@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,43 +6,93 @@ import {
   ImageBackground,
   TextInput,
   Pressable,
-  ToastAndroid,
 } from "react-native";
 import { useNavigation } from "expo-router";
+import { AuthContext } from "../context/authContext";
+import { HttpClient } from "../server/http";
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
+  const { login } = useContext(AuthContext);
   const navigation = useNavigation();
   const [isFocused, setIsFocused] = useState(false);
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [otp, setOtp] = useState("");
+  const [activeOTPInput, setActiveOTPInput] = useState(false);
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [otp, setOtp] = useState('');
+
   const sentOtp = async () => {
     try {
-      ToastAndroid.showWithGravity(
-        `OTP Sent To : ${mobileNumber}`,
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP
-      );
-      console.log("Mobile Number :", mobileNumber);
+      if (mobileNumber) {
+        if (mobileNumber && mobileNumber.length !== 10) {
+          return Toast.show({
+            type: 'error',
+            text1: 'Error Message !',
+            text2: "Mobile Number must be 10 digit",
+          });
+        }
+        const { message } = await HttpClient.post("/driver/send-otp", {
+          phoneNumber: mobileNumber,
+        });
+        setActiveOTPInput(true);
+        return Toast.show({
+          type: 'success',
+          text1: message,
+        });
+        
+      }
+      return Toast.show({
+        type: 'error',
+        text1: 'Error Message !',
+        text2: "Please Enter Mobile Number",
+      });
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error Message!',
+        text2: error?.data?.msg,
+      });
     }
   };
 
   const verify = async () => {
     try {
-      console.log("Mobile Number OTP :", otp, mobileNumber);
-      setOtp("");
-      setMobileNumber("");
-      ToastAndroid.showWithGravity(
-        "Mobile Number Verified!",
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP
-      );
-      navigation.navigate("home");
+      if (otp) {
+        if (otp && otp.length !== 6) {
+          return Toast.show({
+            type: 'error',
+            text1: "OTP must be 6 digit",
+          });
+        }
+        console.log("Mobile Number OTP :", otp);
+        const { token, userData } = await HttpClient.post("/driver/login", {
+          phoneNumber: mobileNumber,
+          otp,
+        });
+        await login({
+          userData,
+          token,
+        });
+        setOtp("");
+        setMobileNumber("");
+        Toast.show({
+          type: 'success',
+          text1: "Mobile Number Verified!",
+        });
+        return navigation.replace("home");
+      }
+      return Toast.show({
+        type: 'error',
+        text1: "Please Enter OTP",
+      });
     } catch (error) {
-      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error Message!',
+        text2: error?.data?.msg,
+      });
     }
   };
+
   return (
     <ImageBackground
       style={styles.bgImage}
@@ -88,11 +138,12 @@ const Login = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               value={otp}
+              editable={activeOTPInput}
               keyboardType="numeric"
             />
           </View>
           <View style={styles.buttonView}>
-            <Pressable onPress={() => verify()}>
+            <Pressable onPress={() => verify()} disabled={!activeOTPInput}>
               <Text style={styles.submitButton}>Submit</Text>
             </Pressable>
             <Pressable

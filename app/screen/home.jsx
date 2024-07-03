@@ -1,60 +1,133 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { StyleSheet, Text, View, Pressable, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "expo-router";
+import { AuthContext } from "../context/authContext";
 import RouteForRide from "./routeForRide";
 import Employee from "./employee";
+import IndiaTime from "../components/getIndiaTime";
+import { HttpClient } from "../server/http";
+import { ScrollView } from "react-native";
+import Toast from "react-native-toast-message";
 
 const Home = () => {
+  const { logout, userData, saveAllActiveTrip } = useContext(AuthContext);
+  const navigation = useNavigation();
   const [tab, setTab] = useState(1);
+  const [tripId, setTripId] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.navigate("login");
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error Message!',
+        text2: error?.data?.message,
+      });
+    }
+  };
+
+  const getAllActiveTrip = async () => {
+    try {
+      const data = await HttpClient.get("/trips/getActiveTrips");
+      setTripId(data[0]?.tripId);
+      saveAllActiveTrip(
+        data.filter((item) => item?.tripId === data[0]?.tripId)
+      );
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error Message!",
+        text2: error?.data?.message,
+      });
+    }
+  };
+
+  useEffect(() => {
+    getAllActiveTrip();
+  }, []);
 
   return (
-    <SafeAreaView>
-      <View style={styles.idBlock}>
-        <Text style={styles.idText}>Trip Id:1234545</Text>
-      </View>
-      <View style={styles.mainView}>
-        <View style={styles.info}>
-          <View style={styles.infoRow}>
-            <Text style={styles.site}>Site: Google</Text>
-            <Text style={styles.loginTime}>Login: 6:45</Text>
-            <Text style={styles.dateTime}>01/01/2024 04:00 AM</Text>
-          </View>
-          <View style={styles.tabField}>
-            <View style={styles.tabView}>
-              <Pressable onPress={() => setTab(1)}>
-                <Text style={[styles.tabButton, tab === 1 && styles.colorBlue]}>
-                  Route Map
-                </Text>
-              </Pressable>
-              <Pressable onPress={() => setTab(2)}>
+    <>
+      <SafeAreaView style={styles.idBlock}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.idText}>Trip Id: {tripId}</Text>
+        </View>
+        <View style={styles.mainView}>
+          <View style={styles.info}>
+            <View style={styles.infoRow}>
+              <Text style={styles.site}>
+                Site: {userData?.site ? userData?.site : "Google"}
+              </Text>
+              <Text style={styles.loginTime}>
+                Login:
+                {new Date().toLocaleTimeString("en-IN", {
+                  timeZone: "Asia/Kolkata",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </Text>
+              <Text style={styles.dateTime}>
+                <IndiaTime data={new Date()} />
+              </Text>
+            </View>
+            <View style={styles.tabField}>
+              <View style={styles.tabView}>
+                <Pressable onPress={() => setTab(1)}>
+                  <Text
+                    style={[styles.tabButton, tab === 1 && styles.colorBlue]}
+                  >
+                    Route Map
+                  </Text>
+                </Pressable>
+                <Pressable onPress={() => setTab(2)}>
+                  <Text
+                    style={[
+                      styles.tabButton,
+                      // styles.border__right_0,
+                      tab === 2 && styles.colorBlue,
+                    ]}
+                  >
+                    Employees
+                  </Text>
+                </Pressable>
+                <Pressable onPress={handleLogout}>
                 <Text
                   style={[
                     styles.tabButton,
                     styles.border__right_0,
-                    tab === 2 && styles.colorBlue,
                   ]}
                 >
-                  Employees
+                  Logout
                 </Text>
               </Pressable>
+              </View>
+              <ScrollView
+                style={{ height: Dimensions.get("window").height - 200 }}
+              >
+                {tab === 1 ? <RouteForRide /> : <Employee />}
+              </ScrollView>
             </View>
-            {tab === 1 ? <RouteForRide /> : <Employee />}
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   idBlock: {
-    borderBottomWidth: 1,
     backgroundColor: "#ffff",
     borderColor: "grey",
-    padding: 10,
+    paddingVertical: 10,
+    flex: 1,
   },
   idText: {
     color: "#1565C0",
+    paddingLeft: 10,
   },
   colorBlue: {
     color: "#1E88E5",
@@ -75,12 +148,13 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderRadius: 5,
     backgroundColor: "#E8EEF4",
+    // flex: 1,
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 10,
+    marginVertical: 10,
     gap: 5,
   },
   site: {
@@ -88,11 +162,11 @@ const styles = StyleSheet.create({
   },
   loginTime: {
     color: "orange",
-    marginLeft: 10,
+    // marginLeft: 10,
   },
-  dateTime: {
-    marginLeft: 10,
-  },
+  // dateTime: {
+  //   marginLeft: 10,
+  // },
   sentButton: {
     color: "green",
     fontWeight: "700",

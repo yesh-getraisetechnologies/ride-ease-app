@@ -1,28 +1,13 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import Login from "./screen/login";
-import Home from "./screen/home";
+import { AuthProvider } from "./context/authContext";
+import App from "./app";
+import Toast from 'react-native-toast-message';
 
-const Stack = createStackNavigator();
-
-const App = () => {
+export default function Root() {
   return (
-    <NavigationContainer independent={true}>
-      <Stack.Navigator initialRouteName="login">
-        <Stack.Screen
-          name="login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="home"
-          component={Home}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <App />
+      <Toast />
+    </AuthProvider>
   );
-};
-
-export default App;
+}

@@ -1,80 +1,118 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Pressable,
   TextInput,
-  ToastAndroid,
   FlatList,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  ScrollView,
 } from "react-native";
 import { AntDesign, Feather, FontAwesome, Entypo } from "@expo/vector-icons";
 import AccordianWrapper from "../components/accordian";
+import { AuthContext } from "../context/authContext";
+import { HttpClient } from "../server/http";
+import Toast from "react-native-toast-message";
 
 export default function Employee() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [verified, setVerified] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [OTPSent, setOTPSent] = useState(false);
-  const [seconds, setSeconds] = useState(0);
+  const [otpArray, setOtpArray] = useState([]);
+  const [OTPSentArray, setOTPSentArray] = useState([]);
+  const [secondsArray, setSecondsArray] = useState([]);
+  const { allActiveTrip, saveAllActiveTrip } = useContext(AuthContext);
 
   const handleItemClick = (index) => {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const data = [1, 2, 3, 4, 5];
-
-  const optSentToEmployee = () => {
+  const optSentToEmployee = async (employee, index) => {
     try {
-      setOTPSent(true);
-      setSeconds(180);
-      ToastAndroid.showWithGravity(
-        "OTP Sent To Employee!",
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP
-      );
+      const { tripId, employeeId, employeePhone, employeeName } = employee;
+      await HttpClient.post("/trips/resendSMS", {
+        tripId,
+        employeeId,
+        employeePhone,
+        employeeName,
+      });
+      const updatedOTPSentArray = [...OTPSentArray];
+      updatedOTPSentArray[index] = true;
+      setOTPSentArray(updatedOTPSentArray);
+
+      const updatedSecondsArray = [...secondsArray];
+      updatedSecondsArray[index] = 180;
+      setSecondsArray(updatedSecondsArray);
+      return Toast.show({
+        type: "success",
+        text1: `OTP Sent To Employee! - ${employeePhone}`,
+      });
     } catch (error) {
-      console.error(error);
+      console.error('Error in otp Sent To Employee', error);
     }
   };
 
-  const optSentToSelf = () => {
-    try {
-      setOTPSent(true);
-      setSeconds(180);
-      ToastAndroid.showWithGravity(
-        "OTP Sent To Self!",
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const optSentToSelf = (index) => {
+  //   try {
+  //     console.log("self phoneNumber:", userData?.mobileNumber);
+  //     const updatedOTPSentArray = [...OTPSentArray];
+  //     updatedOTPSentArray[index] = true;
+  //     setOTPSentArray(updatedOTPSentArray);
 
-  const verifyOTP = () => {
+  //     const updatedSecondsArray = [...secondsArray];
+  //     updatedSecondsArray[index] = 180;
+  //     setSecondsArray(updatedSecondsArray);
+
+  //     return Toast.show({
+  //       type: "success",
+  //       text1: `OTP Sent To Self! - ${userData?.mobileNumber}`,
+  //     });
+  //   } catch (error) {
+  //     console.error('Error in otp Sent To Self', error);
+  //   }
+  // };
+
+  const verifyOTP = async (index) => {
     try {
-      if (otp.length === 6) {
-        setOtp("");
-        setOTPSent(false);
-        setActiveIndex(null);
-        setVerified(true)
-        setSeconds(0)
-        ToastAndroid.showWithGravity(
-          "Mobile Number Verified!",
-          ToastAndroid.SHORT,
-          ToastAndroid.TOP
+      if (otpArray[index] && otpArray[index].length === 6) {
+        const { employeeId, employeePhone, _id } = allActiveTrip[index];
+        await HttpClient.post("/trips/verifySMS", {
+          _id,
+          employeeId,
+          employeePhone,
+          otp: otpArray[index],
+        });
+        const updatedOtpArray = [...otpArray];
+        updatedOtpArray[index] = "";
+        setOtpArray(updatedOtpArray);
+
+        const updatedOTPSentArray = [...OTPSentArray];
+        updatedOTPSentArray[index] = false;
+        setOTPSentArray(updatedOTPSentArray);
+
+        const updatedSecondsArray = [...secondsArray];
+        updatedSecondsArray[index] = 0;
+        setSecondsArray(updatedSecondsArray);
+
+        const result = await HttpClient.get("/trips/getActiveTrips");
+        saveAllActiveTrip(
+          result.filter((item) => item?.tripId === result[0]?.tripId)
         );
+        handleItemClick(index)
+        return Toast.show({
+          type: "success",
+          text1: "Mobile Number Verified!",
+        });
       } else {
-        ToastAndroid.showWithGravity(
-          "OTP must be 6 digit!",
-          ToastAndroid.LONG,
-          ToastAndroid.TOP
-        );
+        return Toast.show({
+          type: "error",
+          text1: "OTP must be 6 digit!",
+        });
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error in Verify otp:', error);
     }
   };
 
@@ -86,109 +124,158 @@ export default function Employee() {
       .padStart(2, "0")}`;
   };
 
-  useEffect(() => {
-    if (seconds > 0) {
-      const interval = setInterval(() => {
-        setSeconds((prevSeconds) => prevSeconds - 1);
-      }, 1000);
+  const callToEmployee = async (phoneNumber) => {
+    const url = `tel:${phoneNumber}`;
+    const supported = await Linking.canOpenURL(url);
 
-      return () => clearInterval(interval);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      return Toast.show({
+        type: "error",
+        text1: `Don't know how to open this URL: ${url}`,
+      });
     }
-  }, [seconds]);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecondsArray((prevSecondsArray) =>
+        prevSecondsArray.map((sec) => (sec > 0 ? sec - 1 : 0))
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <View style={styles.mainView}>
-      <FlatList
-        data={data}
-        nestedScrollEnabled={true}
-        scrollEnabled={false}
-        renderItem={({ item, index }) => (
-          <AccordianWrapper
-            key={index}
-            isOpen={activeIndex === index}
-            toggleCheckbox={() => handleItemClick(index)}
-            mainViewStyle={styles.parentListView}
-            titleView={
-              <View style={styles.listView}>
-                <Text>Ravi Shankar - {item}</Text>
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                  <Feather name="phone-call" size={18} color="#1E88E5" />
-                  {activeIndex === index ? (
-                    <AntDesign name="minuscircleo" size={18} color="black" />
-                  ) : (
-                    <AntDesign name="pluscircleo" size={18} color="black" />
-                  )}
-                  {
-                    verified ? <FontAwesome name="check-circle" size={18} color="#7BCB00" /> : <Entypo name="circle-with-cross" size={18} color="red" />
-                  }
-                </View>
-              </View>
-            }
-            descView={
-              <View>
-                {OTPSent ? (
-                  <>
-                    <View style={styles.buttonView}>
-                      <Text
-                        style={styles.inputText}
-                        aria-label="Label for Mobile Number"
-                        nativeID="mobileNumber"
-                      >
-                        OTP :
-                      </Text>
-                      <TextInput
-                        aria-label="input"
-                        aria-labelledby="otp"
-                        style={[styles.input, isFocused && styles.inputFocused]}
-                        onChangeText={(e) => setOtp(e)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        value={otp}
-                        keyboardType="numeric"
+    <ScrollView>
+      <View style={styles.mainView}>
+        <FlatList
+          data={allActiveTrip}
+          keyExtractor={(item, index) => index.toString()}
+          nestedScrollEnabled={true}
+          scrollEnabled={false}
+          renderItem={({ item, index }) => (
+            <AccordianWrapper
+              isOpen={activeIndex === index}
+              toggleCheckbox={() => {
+                !item?.isVerified && handleItemClick(index)
+              }}
+              mainViewStyle={styles.parentListView}
+              titleView={
+                <View style={styles.listView}>
+                  <Text>
+                    {item?.employeeName.length > 15 ?  item?.employeeName.slice(0, 15) + "..." : item?.employeeName }
+                    {" - "}
+                    {item?.employeePhone}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 10 }}>
+                    <TouchableOpacity
+                      onPress={() => callToEmployee(item?.employeePhone)}
+                    >
+                      <Feather name="phone-call" size={18} color="#1E88E5" />
+                    </TouchableOpacity>
+                    {!item?.isVerified && (activeIndex === index ? (
+                      <AntDesign name="minuscircleo" size={18} color="black" />
+                    ) : (
+                      <AntDesign name="pluscircleo" size={18} color="black" />
+                    ))}
+                    {item?.isVerified ? (
+                      <FontAwesome
+                        name="check-circle"
+                        size={18}
+                        color="#7BCB00"
                       />
-                      <Text>{formatTime(seconds)}</Text>
-                      <Pressable
-                        disabled={seconds !== 0}
-                        onPress={() => optSentToSelf()}
-                      >
+                    ) : (
+                      <Entypo name="circle-with-cross" size={18} color="red" />
+                    )}
+                  </View>
+                </View>
+              }
+              descView={
+                <View>
+                  {OTPSentArray[index] ? (
+                    <>
+                      <View style={styles.buttonView}>
                         <Text
-                          style={[
-                            styles.reSend,
-                            seconds !== 0 && styles.halfOpacity,
-                          ]}
+                          style={styles.inputText}
+                          aria-label="Label for Mobile Number"
+                          nativeID="mobileNumber"
                         >
-                          Re-Send
+                          OTP :
                         </Text>
-                      </Pressable>
-                    </View>
-                    {otp ? (
-                      <View>
-                        <Pressable onPress={() => verifyOTP()}>
-                          <Text style={styles.submitButton}>Submit</Text>
+                        <TextInput
+                          aria-label="input"
+                          aria-labelledby={`otp${index}`}
+                          style={[
+                            styles.input,
+                            isFocused && styles.inputFocused,
+                          ]}
+                          onChangeText={(e) => {
+                            const updatedOtpArray = [...otpArray];
+                            updatedOtpArray[index] = e;
+                            setOtpArray(updatedOtpArray);
+                          }}
+                          onFocus={() => setIsFocused(true)}
+                          onBlur={() => setIsFocused(false)}
+                          value={otpArray[index] || ""}
+                          keyboardType="numeric"
+                        />
+                        <Text>{formatTime(secondsArray[index] || 0)}</Text>
+                        <Pressable
+                          // disabled={secondsArray[index] !== 0}
+                          onPress={() => optSentToEmployee(item, index)}
+                        >
+                          <Text
+                            style={[
+                              styles.reSend,
+                              secondsArray[index] !== 0 && styles.halfOpacity,
+                            ]}
+                          >
+                            Re-Send
+                          </Text>
                         </Pressable>
                       </View>
-                    ) : (
-                      ""
-                    )}
-                  </>
-                ) : (
-                  <View style={styles.buttonView}>
-                    <Pressable onPress={() => optSentToEmployee()}>
-                      <Text style={[styles.button, styles.selfOTPButton]}>
-                        Employee OTP
-                      </Text>
-                    </Pressable>
-                    <Pressable onPress={() => optSentToSelf()}>
-                      <Text style={styles.button}>Self OTP</Text>
-                    </Pressable>
-                  </View>
-                )}
-              </View>
-            }
-          />
-        )}
-      />
-    </View>
+                      {otpArray[index] ? (
+                        <View>
+                          <Pressable
+                            onPress={() => verifyOTP(index)}
+                            disabled={!otpArray[index]}
+                          >
+                            <Text style={styles.submitButton}>Verify</Text>
+                          </Pressable>
+                        </View>
+                      ) : null}
+                    </>
+                  ) : (
+                    <View style={styles.buttonView}>
+                      <Pressable
+                        onPress={() => {
+                          const updatedOTPSentArray = [...OTPSentArray];
+                          updatedOTPSentArray[index] = true;
+                          setOTPSentArray(updatedOTPSentArray);
+                          const updatedSecondsArray = [...secondsArray];
+                          updatedSecondsArray[index] = 180;
+                          setSecondsArray(updatedSecondsArray);
+                        }}
+                      >
+                        <Text style={[styles.button, styles.selfOTPButton]}>
+                          Verify Employee OTP
+                        </Text>
+                      </Pressable>
+                      {/* <Pressable onPress={() => optSentToSelf(index)}>
+                        <Text style={styles.button}>Self OTP</Text>
+                      </Pressable> */}
+                    </View>
+                  )}
+                </View>
+              }
+            />
+          )}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
