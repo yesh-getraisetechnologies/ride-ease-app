@@ -2,8 +2,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Axios = axios.create({
-  baseURL: "http://192.168.29.118:3000/server",
-  // baseURL: "https://transport-server-f4kc.onrender.com/server",
+  // baseURL: "http://192.168.29.118:3000/server",
+  baseURL: "https://transport-server-f4kc.onrender.com/server",
   headers: {
     "Content-Type": "application/json",
   },
