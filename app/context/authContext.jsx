@@ -32,7 +32,7 @@ const AuthProvider = ({ children }) => {
   const saveUserData = async (userData) => {
     try {
       setUserData(userData)
-      await AsyncStorage.setItem("userData", userData);
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }

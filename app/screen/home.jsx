@@ -68,20 +68,25 @@ const Home = () => {
         <View style={styles.info}>
           <View style={styles.tabField}>
             <View style={styles.infoRow}>
-              <Text style={styles.site}>Welcome {userData?.fullName}</Text>
+              <Text style={styles.welcomeText}>Welcome To Ride Ease</Text>
             </View>
             <View style={styles.infoRow}>
-            <Text style={styles.site}>
+              <Text>
+                Full Name - {userData?.fullName}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text>
                 Mobile Number - {userData?.mobileNum}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.site}>
+              <Text>
                 Vehicle No. - {userData?.vehicleNumber}
               </Text>
             </View>
             <View style={styles.infoRow}>
-            <Text style={styles.site}>
+              <Text>
                 Vehicle Type - {userData?.vehicleType}
               </Text>
             </View>
@@ -128,14 +133,17 @@ const styles = StyleSheet.create({
     // flex: 1,
   },
   infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
     marginVertical: 5,
     gap: 5,
   },
-  site: {
-    color: "green",
+  welcomeText: {
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "800",
+    color: "#1E88E5",
   },
   tabField: {
     backgroundColor: "#ffff",

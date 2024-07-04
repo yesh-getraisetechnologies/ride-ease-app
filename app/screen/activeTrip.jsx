@@ -10,7 +10,7 @@ import { ScrollView } from "react-native";
 import Toast from "react-native-toast-message";
 
 const ActiveTrip = () => {
-  const {  userData, saveAllActiveTrip } = useContext(AuthContext);
+  const { userData, saveAllActiveTrip } = useContext(AuthContext);
   const [tab, setTab] = useState(1);
   const [tripId, setTripId] = useState(null);
 
@@ -43,20 +43,15 @@ const ActiveTrip = () => {
         <View style={styles.mainView}>
           <View style={styles.info}>
             <View style={styles.infoRow}>
-              <Text style={styles.site}>
+              <Text style={styles.colorGreen}>
                 Site: {userData?.site ? userData?.site : "Google"}
               </Text>
-              <Text style={styles.loginTime}>
-                Login:
-                {new Date().toLocaleTimeString("en-IN", {
-                  timeZone: "Asia/Kolkata",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </Text>
-              <Text style={styles.dateTime}>
-                <IndiaTime data={new Date()} />
+              <Text>
+                <Text style={styles.colorOrange}>Login:</Text>
+                <Text style={styles.dateTime}>
+                  {" "}
+                  <IndiaTime data={new Date()} />
+                </Text>
               </Text>
             </View>
             <View style={styles.tabField}>
@@ -132,16 +127,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     gap: 5,
   },
-  site: {
+  colorGreen: {
     color: "green",
   },
-  loginTime: {
+  colorOrange: {
     color: "orange",
-    // marginLeft: 10,
   },
-  // dateTime: {
-  //   marginLeft: 10,
-  // },
   sentButton: {
     color: "green",
     fontWeight: "700",
