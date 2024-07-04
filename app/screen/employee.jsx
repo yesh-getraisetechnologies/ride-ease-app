@@ -224,7 +224,7 @@ export default function Employee() {
                         />
                         <Text>{formatTime(secondsArray[index] || 0)}</Text>
                         <Pressable
-                          // disabled={secondsArray[index] !== 0}
+                          disabled={secondsArray[index] !== 0}
                           onPress={() => optSentToEmployee(item, index)}
                         >
                           <Text
