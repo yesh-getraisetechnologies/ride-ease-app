@@ -13,6 +13,7 @@ import { AuthContext } from "../context/authContext";
 import Toast from "react-native-toast-message";
 import { HttpClient } from "../server/http";
 import { useNavigation } from "expo-router";
+import openGoogleMaps from "../components/openGoogleMaps";
 
 const RouteForRide = () => {
   const { allActiveTrip } = useContext(AuthContext);
@@ -27,6 +28,7 @@ const RouteForRide = () => {
         type: "success",
         text1: "Your Trip has been completed.",
       });
+      navigation.navigate("home");
     } catch (error) {
       Toast.show({
         type: "error",
@@ -48,10 +50,11 @@ const RouteForRide = () => {
               <View style={styles.row}>
                 <Icon name="location-on" size={20} color="#65696D" />
                 <Text style={styles.text}>
-                  {item?.employeeName.length > 20 ?  item?.employeeName.slice(0, 20) + "..." : item?.employeeName }
+                  {item?.employeeName.length > 20
+                    ? item?.employeeName.slice(0, 20) + "..."
+                    : item?.employeeName}
                 </Text>
                 <Feather name="navigation" size={18} color="#1E88E5" />
-                {/* <FontAwesome name="check-circle" size={18} color="#7BCB00" /> */}
                 {item?.isVerified ? (
                   <FontAwesome name="check-circle" size={18} color="#7BCB00" />
                 ) : (
@@ -75,10 +78,7 @@ const RouteForRide = () => {
           )}
         </View>
         <View style={styles.buttonView}>
-          <Pressable 
-          // onPress={() => navigation.navigate("map")}
-          onPress={() => console.log('--------- Navigate Button')}
-          >
+          <Pressable onPress={() => openGoogleMaps(allActiveTrip)}>
             <View style={styles.submitButton}>
               <Feather name="navigation" size={18} color="#FFF" />
               <Text style={styles.buttonText}>Navigate</Text>
@@ -86,7 +86,6 @@ const RouteForRide = () => {
           </Pressable>
           <Pressable onPress={() => CompleteTrip()}>
             <View style={styles.submitButton}>
-              {/* <Feather name="navigation" size={18} color="#FFF" /> */}
               <Text style={styles.buttonText}>Complete Trip</Text>
             </View>
           </Pressable>

@@ -1,29 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable, Dimensions } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
 import { AuthContext } from "../context/authContext";
-import RouteForRide from "./routeForRide";
-import Employee from "./employee";
-import IndiaTime from "../components/getIndiaTime";
 import { HttpClient } from "../server/http";
-import { ScrollView } from "react-native";
 import Toast from "react-native-toast-message";
+import { Feather } from "@expo/vector-icons";
 
 const Home = () => {
-  const { logout, userData, saveAllActiveTrip } = useContext(AuthContext);
+  const { logout, userData, saveAllActiveTrip, saveUserData } =
+    useContext(AuthContext);
   const navigation = useNavigation();
-  const [tab, setTab] = useState(1);
-  const [tripId, setTripId] = useState(null);
 
   const handleLogout = async () => {
     try {
       await logout();
       navigation.navigate("login");
+      Toast.show({
+        type: "success",
+        text1: "Logout Successful",
+      });
     } catch (error) {
       Toast.show({
-        type: 'error',
-        text1: 'Error Message!',
+        type: "error",
+        text1: "Error Message!",
         text2: error?.data?.message,
       });
     }
@@ -32,7 +32,6 @@ const Home = () => {
   const getAllActiveTrip = async () => {
     try {
       const data = await HttpClient.get("/trips/getActiveTrips");
-      setTripId(data[0]?.tripId);
       saveAllActiveTrip(
         data.filter((item) => item?.tripId === data[0]?.tripId)
       );
@@ -45,71 +44,64 @@ const Home = () => {
     }
   };
 
+  const getUserData = async () => {
+    try {
+      const { userData } = await HttpClient.get("/auth/me");
+      await saveUserData(userData);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error Message!",
+        text2: error?.data?.message,
+      });
+    }
+  };
+
   useEffect(() => {
     getAllActiveTrip();
+    getUserData();
   }, []);
 
   return (
     <>
       <SafeAreaView style={styles.idBlock}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.idText}>Trip Id: {tripId}</Text>
-        </View>
-        <View style={styles.mainView}>
-          <View style={styles.info}>
+        <View style={styles.info}>
+          <View style={styles.tabField}>
             <View style={styles.infoRow}>
-              <Text style={styles.site}>
-                Site: {userData?.site ? userData?.site : "Google"}
-              </Text>
-              <Text style={styles.loginTime}>
-                Login:
-                {new Date().toLocaleTimeString("en-IN", {
-                  timeZone: "Asia/Kolkata",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </Text>
-              <Text style={styles.dateTime}>
-                <IndiaTime data={new Date()} />
+              <Text style={styles.welcomeText}>Welcome To Ride Ease</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text>
+                Full Name - {userData?.fullName}
               </Text>
             </View>
-            <View style={styles.tabField}>
-              <View style={styles.tabView}>
-                <Pressable onPress={() => setTab(1)}>
-                  <Text
-                    style={[styles.tabButton, tab === 1 && styles.colorBlue]}
-                  >
-                    Route Map
-                  </Text>
-                </Pressable>
-                <Pressable onPress={() => setTab(2)}>
-                  <Text
-                    style={[
-                      styles.tabButton,
-                      // styles.border__right_0,
-                      tab === 2 && styles.colorBlue,
-                    ]}
-                  >
-                    Employees
-                  </Text>
-                </Pressable>
-                <Pressable onPress={handleLogout}>
-                <Text
-                  style={[
-                    styles.tabButton,
-                    styles.border__right_0,
-                  ]}
-                >
-                  Logout
-                </Text>
+            <View style={styles.infoRow}>
+              <Text>
+                Mobile Number - {userData?.mobileNum}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text>
+                Vehicle No. - {userData?.vehicleNumber}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text>
+                Vehicle Type - {userData?.vehicleType}
+              </Text>
+            </View>
+            <View style={styles.buttonView}>
+              <Pressable onPress={() => navigation.navigate("activeTrip")}>
+                <View style={styles.submitButton}>
+                  <Feather name="navigation" size={18} color="#FFF" />
+                  <Text style={styles.buttonText}>Your Active Trip</Text>
+                </View>
               </Pressable>
-              </View>
-              <ScrollView
-                style={{ height: Dimensions.get("window").height - 200 }}
-              >
-                {tab === 1 ? <RouteForRide /> : <Employee />}
-              </ScrollView>
+              <Pressable onPress={handleLogout}>
+                <View style={styles.submitButton}>
+                  <Text style={styles.buttonText}>Logout</Text>
+                </View>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -123,21 +115,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffff",
     borderColor: "grey",
     paddingVertical: 10,
+    paddingHorizontal: 7,
     flex: 1,
-  },
-  idText: {
-    color: "#1565C0",
-    paddingLeft: 10,
-  },
-  colorBlue: {
-    color: "#1E88E5",
   },
   border__right_0: {
     borderRightWidth: 0,
-  },
-  mainView: {
-    padding: 7,
-    backgroundColor: "#ffff",
   },
   info: {
     display: "flex",
@@ -151,44 +133,22 @@ const styles = StyleSheet.create({
     // flex: 1,
   },
   infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 10,
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    marginVertical: 5,
     gap: 5,
   },
-  site: {
-    color: "green",
-  },
-  loginTime: {
-    color: "orange",
-    // marginLeft: 10,
-  },
-  // dateTime: {
-  //   marginLeft: 10,
-  // },
-  sentButton: {
-    color: "green",
-    fontWeight: "700",
-    textAlign: "right",
-    marginVertical: 5,
-    marginRight: 5,
+  welcomeText: {
+    fontSize: 20,
+    textAlign: "center",
+    fontWeight: "800",
+    color: "#1E88E5",
   },
   tabField: {
     backgroundColor: "#ffff",
     borderRadius: 10,
     padding: 5,
-  },
-  tabView: {
-    flexDirection: "row",
-    marginTop: 5,
-    paddingVertical: 5,
-    gap: 1,
-    borderRadius: 20,
-    borderColor: "gray",
-    borderWidth: 1,
-    backgroundColor: "#FFFF",
-    marginRight: "auto",
   },
   tabButton: {
     flexDirection: "column",
@@ -196,6 +156,26 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "500",
     borderRightWidth: 2,
+  },
+  buttonView: {
+    marginTop: 20,
+    gap: 10,
+  },
+  submitButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    paddingVertical: 10,
+    backgroundColor: "#1E88E5",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "600",
+    width: "80%",
+    textAlign: "center",
+    marginHorizontal: "auto",
   },
 });
 

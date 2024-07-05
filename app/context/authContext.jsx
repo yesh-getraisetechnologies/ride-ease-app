@@ -10,56 +10,39 @@ const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [allActiveTrip, setAllActiveTrip] = useState(null);
 
-  const login = async ({ token, userData }) => {
-    try {
-      setToken(token);
-      setUserData(userData);
-      await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("userData", JSON.stringify(userData));
-    } catch (error) {
-      console.error("Error", error);
-    }
-  };
-
   const logout = async () => {
     try {
       setToken(null);
       setUserData(null);
+      setAllActiveTrip(null);
       await AsyncStorage.clear();
     } catch (error) {
       console.error("Error", error);
     }
   };
 
-  const getToken = async () => {
+  const saveToken = async (token) => {
     try {
-      const value = await AsyncStorage.getItem('token');
-      if (value !== null) {
-        return value;
-      }
+      setToken(token);
+      await AsyncStorage.setItem("token", token);
     } catch (error) {
       console.error("Failed to fetch token", error);
     }
   };
 
-  const getUserData = async () => {
+  const saveUserData = async (userData) => {
     try {
-      const value = await AsyncStorage.getItem("userData");
-      if (value !== null) {
-        return value;
-      }
+      setUserData(userData);
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
   };
 
-  const saveAllActiveTrip = async (data) => {
+  const saveAllActiveTrip = async (activeTrip) => {
     try {
-      setAllActiveTrip(data)
-      const value = await AsyncStorage.setItem("activeTrip", JSON.stringify(data));
-      if (value !== null) {
-        return value;
-      }
+      setAllActiveTrip(activeTrip);
+      await AsyncStorage.setItem("activeTrip", JSON.stringify(activeTrip));
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
@@ -75,7 +58,7 @@ const AuthProvider = ({ children }) => {
     const loadUserData = async () => {
       const userData = await AsyncStorage.getItem("userData");
       if (userData) {
-        setToken(JSON.parse(userData));
+        setUserData(JSON.parse(userData));
       }
     };
     const loadAllActiveTrip = async () => {
@@ -84,10 +67,12 @@ const AuthProvider = ({ children }) => {
         setAllActiveTrip(JSON.parse(allActiveTrip));
       }
     };
-    loadToken();
-    loadUserData();
-    loadAllActiveTrip();
-    setIsLoading(false);
+
+    const loadData = async () => {
+      await Promise.all([loadToken(), loadUserData(), loadAllActiveTrip()]);
+      setIsLoading(false);
+    };
+    loadData();
   }, []);
 
   return (
@@ -96,10 +81,9 @@ const AuthProvider = ({ children }) => {
         token,
         userData,
         allActiveTrip,
-        login,
         logout,
-        getToken,
-        getUserData,
+        saveToken,
+        saveUserData,
         saveAllActiveTrip,
       }}
     >
