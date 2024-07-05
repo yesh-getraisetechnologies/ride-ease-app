@@ -43,7 +43,7 @@ export default function Employee() {
       setOTPSentArray(updatedOTPSentArray);
 
       const updatedSecondsArray = [...secondsArray];
-      updatedSecondsArray[index] = 180;
+      updatedSecondsArray[index] = 30;
       setSecondsArray(updatedSecondsArray);
       return Toast.show({
         type: "success",
@@ -53,26 +53,6 @@ export default function Employee() {
       console.error('Error in otp Sent To Employee', error);
     }
   };
-
-  // const optSentToSelf = (index) => {
-  //   try {
-  //     console.log("self phoneNumber:", userData?.mobileNumber);
-  //     const updatedOTPSentArray = [...OTPSentArray];
-  //     updatedOTPSentArray[index] = true;
-  //     setOTPSentArray(updatedOTPSentArray);
-
-  //     const updatedSecondsArray = [...secondsArray];
-  //     updatedSecondsArray[index] = 180;
-  //     setSecondsArray(updatedSecondsArray);
-
-  //     return Toast.show({
-  //       type: "success",
-  //       text1: `OTP Sent To Self! - ${userData?.mobileNumber}`,
-  //     });
-  //   } catch (error) {
-  //     console.error('Error in otp Sent To Self', error);
-  //   }
-  // };
 
   const verifyOTP = async (index) => {
     try {
@@ -256,7 +236,7 @@ export default function Employee() {
                           updatedOTPSentArray[index] = true;
                           setOTPSentArray(updatedOTPSentArray);
                           const updatedSecondsArray = [...secondsArray];
-                          updatedSecondsArray[index] = 180;
+                          updatedSecondsArray[index] = 30;
                           setSecondsArray(updatedSecondsArray);
                         }}
                       >
@@ -264,9 +244,6 @@ export default function Employee() {
                           Verify Employee OTP
                         </Text>
                       </Pressable>
-                      {/* <Pressable onPress={() => optSentToSelf(index)}>
-                        <Text style={styles.button}>Self OTP</Text>
-                      </Pressable> */}
                     </View>
                   )}
                 </View>
