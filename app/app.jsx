@@ -5,7 +5,6 @@ import { AuthContext } from "./context/authContext";
 import Login from "./screen/login";
 import Home from "./screen/home";
 import ActiveTrip from "./screen/activeTrip";
-// import Map from "./screen/map";
 
 const Stack = createStackNavigator();
 
@@ -30,11 +29,6 @@ const App = () => {
           component={ActiveTrip}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
-          name="map"
-          component={Map}
-          options={{ headerShown: false }}
-        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

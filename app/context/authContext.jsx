@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
     try {
       setToken(null);
       setUserData(null);
+      setAllActiveTrip(null);
       await AsyncStorage.clear();
     } catch (error) {
       console.error("Error", error);
@@ -22,7 +23,7 @@ const AuthProvider = ({ children }) => {
 
   const saveToken = async (token) => {
     try {
-      setToken(token)
+      setToken(token);
       await AsyncStorage.setItem("token", token);
     } catch (error) {
       console.error("Failed to fetch token", error);
@@ -31,7 +32,7 @@ const AuthProvider = ({ children }) => {
 
   const saveUserData = async (userData) => {
     try {
-      setUserData(userData)
+      setUserData(userData);
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
     } catch (error) {
       console.error("Failed to fetch user data", error);
@@ -40,8 +41,8 @@ const AuthProvider = ({ children }) => {
 
   const saveAllActiveTrip = async (activeTrip) => {
     try {
-      setAllActiveTrip(activeTrip)
-       await AsyncStorage.setItem("activeTrip", JSON.stringify(activeTrip));
+      setAllActiveTrip(activeTrip);
+      await AsyncStorage.setItem("activeTrip", JSON.stringify(activeTrip));
     } catch (error) {
       console.error("Failed to fetch user data", error);
     }
@@ -57,7 +58,7 @@ const AuthProvider = ({ children }) => {
     const loadUserData = async () => {
       const userData = await AsyncStorage.getItem("userData");
       if (userData) {
-        setToken(JSON.parse(userData));
+        setUserData(JSON.parse(userData));
       }
     };
     const loadAllActiveTrip = async () => {
@@ -66,10 +67,12 @@ const AuthProvider = ({ children }) => {
         setAllActiveTrip(JSON.parse(allActiveTrip));
       }
     };
-    loadToken();
-    loadUserData();
-    loadAllActiveTrip();
-    setIsLoading(false);
+
+    const loadData = async () => {
+      await Promise.all([loadToken(), loadUserData(), loadAllActiveTrip()]);
+      setIsLoading(false);
+    };
+    loadData();
   }, []);
 
   return (
