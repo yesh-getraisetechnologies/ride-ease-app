@@ -8,7 +8,6 @@ import {
   FlatList,
   TouchableOpacity,
   Linking,
-  Alert,
   ScrollView,
 } from "react-native";
 import { AntDesign, Feather, FontAwesome, Entypo } from "@expo/vector-icons";
@@ -17,14 +16,13 @@ import { AuthContext } from "../context/authContext";
 import { HttpClient } from "../server/http";
 import Toast from "react-native-toast-message";
 
-export default function Employee() {
+export default function Employee({setIsLoading}) {
   const [activeIndex, setActiveIndex] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
   const [otpArray, setOtpArray] = useState([]);
   const [OTPSentArray, setOTPSentArray] = useState([]);
   const [secondsArray, setSecondsArray] = useState([]);
   const { allActiveTrip, saveAllActiveTrip } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleItemClick = (index) => {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -136,7 +134,6 @@ export default function Employee() {
 
   return (
     <ScrollView>
-      {isLoading ? <Loader /> : ""}
       <View style={styles.mainView}>
         <FlatList
           data={allActiveTrip}

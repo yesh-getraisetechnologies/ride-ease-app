@@ -6,13 +6,16 @@ import RouteForRide from "./routeForRide";
 import Employee from "./employee";
 import IndiaTime from "../components/getIndiaTime";
 import { ScrollView } from "react-native";
+import Loader from "../components/loader";
 
 const ActiveTrip = () => {
   const { userData, allActiveTrip } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [tab, setTab] = useState(1);
 
   return (
     <SafeAreaView style={styles.idBlock}>
+      {isLoading ? <Loader /> : ""}
       <View>
         <Text style={styles.idText}>Trip Id: {allActiveTrip[0]?.tripId}</Text>
       </View>
@@ -51,7 +54,7 @@ const ActiveTrip = () => {
             <ScrollView
               style={{ height: Dimensions.get("window").height - 200 }}
             >
-              {tab === 1 ? <RouteForRide /> : <Employee />}
+              {tab === 1 ? <RouteForRide setIsLoading={setIsLoading} /> : <Employee setIsLoading={setIsLoading} />}
             </ScrollView>
           </View>
         </View>
