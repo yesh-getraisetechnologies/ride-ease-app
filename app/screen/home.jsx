@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "expo-router";
@@ -6,21 +6,26 @@ import { AuthContext } from "../context/authContext";
 import { HttpClient } from "../server/http";
 import Toast from "react-native-toast-message";
 import { Feather } from "@expo/vector-icons";
+import Loader from "../components/loader";
 
 const Home = () => {
   const { logout, userData, saveAllActiveTrip, saveUserData } =
     useContext(AuthContext);
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
+      setIsLoading(true)
       await logout();
-      navigation.navigate("login");
+      setIsLoading(false)
       Toast.show({
         type: "success",
         text1: "Logout Successful",
       });
+      navigation.navigate("login");
     } catch (error) {
+      setIsLoading(false)
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -31,11 +36,15 @@ const Home = () => {
 
   const getAllActiveTrip = async () => {
     try {
+      setIsLoading(true)
       const data = await HttpClient.get("/trips/getActiveTrips");
       saveAllActiveTrip(
         data.filter((item) => item?.tripId === data[0]?.tripId)
       );
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
+      console.log('Error in getAllActiveTrip:', error?.data);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -46,9 +55,13 @@ const Home = () => {
 
   const getUserData = async () => {
     try {
+      setIsLoading(true)
       const { userData } = await HttpClient.get("/auth/me");
       await saveUserData(userData);
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
+      console.log('Error in getUserData:', error?.data);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -65,6 +78,7 @@ const Home = () => {
   return (
     <>
       <SafeAreaView style={styles.idBlock}>
+        {isLoading ? <Loader /> : ""}
         <View style={styles.info}>
           <View style={styles.tabField}>
             <View style={styles.infoRow}>

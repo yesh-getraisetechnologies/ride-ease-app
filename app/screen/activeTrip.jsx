@@ -13,7 +13,7 @@ const ActiveTrip = () => {
 
   return (
     <SafeAreaView style={styles.idBlock}>
-      <View style={{ flex: 1 }}>
+      <View>
         <Text style={styles.idText}>Trip Id: {allActiveTrip[0]?.tripId}</Text>
       </View>
       <View style={styles.mainView}>

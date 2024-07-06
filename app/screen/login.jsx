@@ -10,46 +10,50 @@ import {
 import { useNavigation } from "expo-router";
 import { AuthContext } from "../context/authContext";
 import { HttpClient } from "../server/http";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
+import Loader from "../components/loader";
 
 const Login = () => {
   const { saveToken } = useContext(AuthContext);
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [activeOTPInput, setActiveOTPInput] = useState(false);
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [otp, setOtp] = useState('');
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [otp, setOtp] = useState("");
 
   const sentOtp = async () => {
     try {
       if (mobileNumber) {
         if (mobileNumber && mobileNumber.length !== 10) {
           return Toast.show({
-            type: 'error',
-            text1: 'Error Message !',
+            type: "error",
+            text1: "Error Message !",
             text2: "Mobile Number must be 10 digit",
           });
         }
+        setIsLoading(true);
         const { message } = await HttpClient.post("/driver/send-otp", {
           phoneNumber: mobileNumber,
         });
         setActiveOTPInput(true);
+        setIsLoading(false);
         return Toast.show({
-          type: 'success',
+          type: "success",
           text1: message,
         });
-        
       }
       return Toast.show({
-        type: 'error',
-        text1: 'Error Message !',
+        type: "error",
+        text1: "Error Message !",
         text2: "Please Enter Mobile Number",
       });
     } catch (error) {
+      setIsLoading(false);
       Toast.show({
-        type: 'error',
-        text1: 'Error Message!',
-        text2: error?.data?.msg,
+        type: "error",
+        text1: "Error Message!",
+        text2: error?.data?.message,
       });
     }
   };
@@ -59,10 +63,11 @@ const Login = () => {
       if (otp) {
         if (otp && otp.length !== 6) {
           return Toast.show({
-            type: 'error',
+            type: "error",
             text1: "OTP must be 6 digit",
           });
         }
+        setIsLoading(true);
         const { token } = await HttpClient.post("/driver/login", {
           phoneNumber: mobileNumber,
           otp,
@@ -70,90 +75,98 @@ const Login = () => {
         await saveToken(token);
         setOtp("");
         setMobileNumber("");
+        setIsLoading(false);
         Toast.show({
-          type: 'success',
+          type: "success",
           text1: "Mobile Number Verified!",
         });
-        return navigation.replace("home");
+        setTimeout(() => {
+          navigation.replace("home")
+        }, 500);
+        return ;
       }
       return Toast.show({
-        type: 'error',
+        type: "error",
         text1: "Please Enter OTP",
       });
     } catch (error) {
+      setIsLoading(false);
       Toast.show({
-        type: 'error',
-        text1: 'Error Message!',
-        text2: error?.data?.msg,
+        type: "error",
+        text1: "Error Message!",
+        text2: error?.data?.message,
       });
     }
   };
 
   return (
-    <ImageBackground
-      style={styles.bgImage}
-      source={require("../../assets/images/back-ground-image.jpg")}
-    >
-      <View style={styles.blurView}>
-        <View style={styles.inputParentView}>
-          <View style={styles.inputView}>
-            <Text
-              style={styles.inputText}
-              aria-label="Label for Mobile Number"
-              nativeID="mobileNumber"
-            >
-              Mobile Number :
-            </Text>
-            <TextInput
-              aria-label="input"
-              aria-labelledby="mobileNumber"
-              style={[styles.input, isFocused && styles.inputFocused]}
-              onChangeText={(e) => setMobileNumber(e)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              value={mobileNumber}
-              keyboardType="numeric"
-            />
-          </View>
-          <Pressable onPress={() => sentOtp()}>
-            <Text style={styles.sentButton}>Get OTP</Text>
-          </Pressable>
-          <View style={styles.inputView}>
-            <Text
-              style={styles.inputText}
-              aria-label="Label for Mobile Number"
-              nativeID="mobileNumber"
-            >
-              OTP :
-            </Text>
-            <TextInput
-              aria-label="input"
-              aria-labelledby="otp"
-              style={[styles.input, isFocused && styles.inputFocused]}
-              onChangeText={(e) => setOtp(e)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              value={otp}
-              editable={activeOTPInput}
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.buttonView}>
-            <Pressable onPress={() => verify()} disabled={!activeOTPInput}>
-              <Text style={styles.submitButton}>Submit</Text>
+    <>
+      {isLoading ? <Loader /> : ""}
+      <ImageBackground
+        style={styles.bgImage}
+        source={require("../../assets/images/back-ground-image.jpg")}
+      >
+        <View style={styles.blurView}>
+          <View style={styles.inputParentView}>
+            <View style={styles.inputView}>
+              <Text
+                style={styles.inputText}
+                aria-label="Label for Mobile Number"
+                nativeID="mobileNumber"
+              >
+                Mobile Number :
+              </Text>
+              <TextInput
+                aria-label="input"
+                aria-labelledby="mobileNumber"
+                style={[styles.input, isFocused && styles.inputFocused]}
+                onChangeText={(e) => setMobileNumber(e)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                value={mobileNumber}
+                keyboardType="numeric"
+              />
+            </View>
+            <Pressable onPress={() => sentOtp()}>
+              <Text style={styles.sentButton}>Get OTP</Text>
             </Pressable>
-            <Pressable
-              onPress={() => {
-                setOtp("");
-                setMobileNumber("");
-              }}
-            >
-              <Text style={styles.submitButton}>Cancel</Text>
-            </Pressable>
+            <View style={styles.inputView}>
+              <Text
+                style={styles.inputText}
+                aria-label="Label for Mobile Number"
+                nativeID="mobileNumber"
+              >
+                OTP :
+              </Text>
+              <TextInput
+                aria-label="input"
+                aria-labelledby="otp"
+                style={[styles.input, isFocused && styles.inputFocused]}
+                onChangeText={(e) => setOtp(e)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                value={otp}
+                editable={activeOTPInput}
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={styles.buttonView}>
+              <Pressable onPress={() => verify()} disabled={!activeOTPInput}>
+                <Text style={styles.submitButton}>Submit</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setOtp("");
+                  setMobileNumber("");
+                }}
+              >
+                <Text style={styles.submitButton}>Cancel</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+    </>
   );
 };
 

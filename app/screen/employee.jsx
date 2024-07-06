@@ -24,6 +24,7 @@ export default function Employee() {
   const [OTPSentArray, setOTPSentArray] = useState([]);
   const [secondsArray, setSecondsArray] = useState([]);
   const { allActiveTrip, saveAllActiveTrip } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleItemClick = (index) => {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -31,6 +32,7 @@ export default function Employee() {
 
   const optSentToEmployee = async (employee, index) => {
     try {
+      setIsLoading(true)
       const { tripId, employeeId, employeePhone, employeeName } = employee;
       await HttpClient.post("/trips/resendSMS", {
         tripId,
@@ -38,6 +40,7 @@ export default function Employee() {
         employeePhone,
         employeeName,
       });
+      setIsLoading(false)
       const updatedOTPSentArray = [...OTPSentArray];
       updatedOTPSentArray[index] = true;
       setOTPSentArray(updatedOTPSentArray);
@@ -50,6 +53,7 @@ export default function Employee() {
         text1: `OTP Sent To Employee! - ${employeePhone}`,
       });
     } catch (error) {
+      setIsLoading(false)
       console.error('Error in otp Sent To Employee', error);
     }
   };
@@ -58,12 +62,14 @@ export default function Employee() {
     try {
       if (otpArray[index] && otpArray[index].length === 6) {
         const { employeeId, employeePhone, _id } = allActiveTrip[index];
+        setIsLoading(true)
         await HttpClient.post("/trips/verifySMS", {
           _id,
           employeeId,
           employeePhone,
           otp: otpArray[index],
         });
+        setIsLoading(false)
         const updatedOtpArray = [...otpArray];
         updatedOtpArray[index] = "";
         setOtpArray(updatedOtpArray);
@@ -92,6 +98,7 @@ export default function Employee() {
         });
       }
     } catch (error) {
+      setIsLoading(false)
       console.error('Error in Verify otp:', error);
     }
   };
@@ -124,12 +131,12 @@ export default function Employee() {
         prevSecondsArray.map((sec) => (sec > 0 ? sec - 1 : 0))
       );
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
   return (
     <ScrollView>
+      {isLoading ? <Loader /> : ""}
       <View style={styles.mainView}>
         <FlatList
           data={allActiveTrip}

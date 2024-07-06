@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -14,22 +14,27 @@ import Toast from "react-native-toast-message";
 import { HttpClient } from "../server/http";
 import { useNavigation } from "expo-router";
 import openGoogleMaps from "../components/openGoogleMaps";
+import Loader from "../components/loader";
 
 const RouteForRide = () => {
   const { allActiveTrip } = useContext(AuthContext);
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const CompleteTrip = async () => {
     try {
+      setIsLoading(true)
       await HttpClient.post("/trips/complete-trip", {
         tripId: allActiveTrip[0]?.tripId,
       });
+      setIsLoading(false)
       Toast.show({
         type: "success",
         text1: "Your Trip has been completed.",
       });
       navigation.navigate("home");
     } catch (error) {
+      setIsLoading(false)
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -40,6 +45,7 @@ const RouteForRide = () => {
 
   return (
     <ScrollView>
+      {isLoading ? <Loader /> : ""}
       <View style={styles.container}>
         <FlatList
           data={allActiveTrip}

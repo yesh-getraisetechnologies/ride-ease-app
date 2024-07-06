@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loader from "../components/loader";
 
 const AuthContext = createContext();
 
@@ -87,15 +87,7 @@ const AuthProvider = ({ children }) => {
         saveAllActiveTrip,
       }}
     >
-      {isLoading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" color="#FF6961" />
-        </View>
-      ) : (
-        children
-      )}
+      {isLoading ? <Loader /> : children}
     </AuthContext.Provider>
   );
 };
