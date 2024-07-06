@@ -26,7 +26,7 @@ const ActiveTrip = () => {
               Site: {userData?.site ? userData?.site : "Google"}
             </Text>
             <Text>
-              <Text style={styles.colorOrange}>Login:</Text>
+              <Text style={styles.colorOrange}>Login: </Text>
               <Text style={styles.dateTime}>
                 <IndiaTime data={new Date()} />
               </Text>
