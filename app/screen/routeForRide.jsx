@@ -15,24 +15,42 @@ import { HttpClient } from "../server/http";
 import { useNavigation } from "expo-router";
 import openGoogleMaps from "../components/openGoogleMaps";
 
-const RouteForRide = ({setIsLoading}) => {
-  const { allActiveTrip } = useContext(AuthContext);
+const RouteForRide = ({ setIsLoading }) => {
+  const { allActiveTrip, saveAllActiveTrip } = useContext(AuthContext);
   const navigation = useNavigation();
+  const isPickup = allActiveTrip[0].tripId[0] === "P" ? true : false;
+  const startAddress = isPickup
+    ? allActiveTrip[0].pickAddress
+    : allActiveTrip[0].office_address;
+  const destinationAddress = isPickup
+    ? allActiveTrip[0].office_address
+    : allActiveTrip[allActiveTrip.length - 1].pickAddress;
+  const waypointAddresses = [
+    startAddress,
+    ...allActiveTrip.slice(1, -1).map((trip) => trip.pickAddress),
+  ];
 
   const CompleteTrip = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       await HttpClient.post("/trips/complete-trip", {
         tripId: allActiveTrip[0]?.tripId,
       });
-      setIsLoading(false)
+      const data = await HttpClient.get("/trips/getActiveTrips");
+      if (data.length) {
+        await saveAllActiveTrip(
+          data.filter((item) => item?.tripId === data[0]?.tripId)
+        );
+      }
+      await saveAllActiveTrip(data);
+      setIsLoading(false);
       Toast.show({
         type: "success",
         text1: "Your Trip has been completed.",
       });
       navigation.navigate("home");
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -45,7 +63,7 @@ const RouteForRide = ({setIsLoading}) => {
     <ScrollView>
       <View style={styles.container}>
         <FlatList
-          data={allActiveTrip}
+          data={waypointAddresses}
           nestedScrollEnabled={true}
           scrollEnabled={false}
           renderItem={({ item, index }) => (
@@ -53,9 +71,7 @@ const RouteForRide = ({setIsLoading}) => {
               <View style={styles.row}>
                 <Icon name="location-on" size={20} color="#65696D" />
                 <Text style={styles.text}>
-                  {item?.employeeName.length > 20
-                    ? item?.employeeName.slice(0, 20) + "..."
-                    : item?.employeeName}
+                  {item?.length > 20 ? item?.slice(0, 25) + "..." : item}
                 </Text>
                 <Feather name="navigation" size={18} color="#1E88E5" />
                 {item?.isVerified ? (
@@ -73,15 +89,23 @@ const RouteForRide = ({setIsLoading}) => {
         <View style={styles.row}>
           <Feather name="navigation" size={18} color="#1E88E5" />
           {allActiveTrip ? (
-            <Text style={styles.text}>
-              {allActiveTrip[allActiveTrip.length - 1].pickAddress}
-            </Text>
+            <Text style={styles.text}>{destinationAddress}</Text>
           ) : (
             ""
           )}
         </View>
         <View style={styles.buttonView}>
-          <Pressable onPress={() => openGoogleMaps(allActiveTrip)}>
+          <Pressable
+            onPress={() =>
+              openGoogleMaps({
+                startAddress,
+                destinationAddress,
+                waypointAddresses: allActiveTrip
+                  .slice(1, -1)
+                  .map((trip) => trip.pickAddress),
+              })
+            }
+          >
             <View style={styles.submitButton}>
               <Feather name="navigation" size={18} color="#FFF" />
               <Text style={styles.buttonText}>Navigate</Text>

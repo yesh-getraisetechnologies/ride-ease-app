@@ -1,8 +1,9 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 const Axios = axios.create({
-  baseURL: "https://transport-server-f4kc.onrender.com/server",
+  baseURL: "https://api.rideease.in/server",
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,6 +19,14 @@ Axios.interceptors.request.use(
     return config;
   },
   (error) => {
+    if (error.response && error.response.status === 401) {
+      Toast.show({
+        type: "error",
+        text1: "Session Expired!",
+        text2: "Please Login Again.",
+      });
+      return navigationRef.current?.navigate("Login");
+    }
     return Promise.reject(error?.response);
   }
 );

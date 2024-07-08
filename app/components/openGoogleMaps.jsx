@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { Linking } from 'react-native';
+import axios from "axios";
+import { Linking } from "react-native";
 
 const API_KEY = "AIzaSyDcP0oTGD19Zy93-i768Myim9hPQPmwY34";
 
@@ -23,14 +23,12 @@ const geocodeAddress = async (address, apiKey) => {
   }
 };
 
-const openGoogleMaps = async (tripData) => {
+const openGoogleMaps = async ({
+  startAddress,
+  destinationAddress,
+  waypointAddresses,
+}) => {
   try {
-    const startAddress = tripData[0].office_address;
-    const destinationAddress = tripData[tripData.length - 1].pickAddress;
-    const waypointAddresses = tripData
-      .slice(1, -1)
-      .map((trip) => trip.pickAddress);
-
     const start = await geocodeAddress(startAddress, API_KEY);
     const destination = await geocodeAddress(destinationAddress, API_KEY);
     const waypoints = await Promise.all(

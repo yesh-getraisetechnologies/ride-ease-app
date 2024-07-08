@@ -9,23 +9,23 @@ import { Feather } from "@expo/vector-icons";
 import Loader from "../components/loader";
 
 const Home = () => {
-  const { logout, userData, saveAllActiveTrip, saveUserData } =
+  const { logout, userData, saveAllActiveTrip, saveUserData, allActiveTrip } =
     useContext(AuthContext);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       await logout();
-      setIsLoading(false)
+      setIsLoading(false);
       Toast.show({
         type: "success",
         text1: "Logout Successful",
       });
       navigation.navigate("login");
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -36,15 +36,18 @@ const Home = () => {
 
   const getAllActiveTrip = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const data = await HttpClient.get("/trips/getActiveTrips");
-      saveAllActiveTrip(
-        data.filter((item) => item?.tripId === data[0]?.tripId)
-      );
-      setIsLoading(false)
+      if(data.length){
+        await saveAllActiveTrip(
+          data.filter((item) => item?.tripId === data[0]?.tripId)
+        );
+      }
+      await saveAllActiveTrip(data);
+      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
-      console.log('Error in getAllActiveTrip:', error?.data);
+      setIsLoading(false);
+      console.log("Error in getAllActiveTrip:", error?.data);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -55,13 +58,13 @@ const Home = () => {
 
   const getUserData = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const { userData } = await HttpClient.get("/auth/me");
       await saveUserData(userData);
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
-      console.log('Error in getUserData:', error?.data);
+      setIsLoading(false);
+      console.log("Error in getUserData:", error?.data);
       Toast.show({
         type: "error",
         text1: "Error Message!",
@@ -85,27 +88,29 @@ const Home = () => {
               <Text style={styles.welcomeText}>Welcome To Ride Ease</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text>
-                Full Name - {userData?.fullName}
-              </Text>
+              <Text>Full Name - {userData?.fullName}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text>
-                Mobile Number - {userData?.mobileNum}
-              </Text>
+              <Text>Mobile Number - {userData?.mobileNum}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text>
-                Vehicle No. - {userData?.vehicleNumber}
-              </Text>
+              <Text>Vehicle No. - {userData?.vehicleNumber}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text>
-                Vehicle Type - {userData?.vehicleType}
-              </Text>
+              <Text>Vehicle Type - {userData?.vehicleType}</Text>
             </View>
             <View style={styles.buttonView}>
-              <Pressable onPress={() => navigation.navigate("activeTrip")}>
+              <Pressable
+                onPress={() =>
+                  allActiveTrip.length
+                    ? navigation.navigate("activeTrip")
+                    : Toast.show({
+                        type: "success",
+                        text1: "Message",
+                        text2: "You don't have active trip",
+                      })
+                }
+              >
                 <View style={styles.submitButton}>
                   <Feather name="navigation" size={18} color="#FFF" />
                   <Text style={styles.buttonText}>Your Active Trip</Text>
