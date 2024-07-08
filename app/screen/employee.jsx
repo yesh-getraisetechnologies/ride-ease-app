@@ -54,7 +54,8 @@ export default function Employee({setIsLoading}) {
       setIsLoading(false)
       Toast.show({
         type: "error",
-        text1: error?.data?.message,
+        text1: "Error Message!",
+        text2: error?.data?.message,
       });
       console.error('Error in otp Sent To Employee', error);
     }
@@ -103,7 +104,8 @@ export default function Employee({setIsLoading}) {
       setIsLoading(false)
       Toast.show({
         type: "error",
-        text1: error?.data?.message,
+        text1: "Error Message!",
+        text2: error?.data?.message,
       });
       console.error('Error in Verify otp:', error);
     }
