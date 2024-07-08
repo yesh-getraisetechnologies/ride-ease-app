@@ -41,8 +41,12 @@ const openGoogleMaps = async ({
 
     const url = `https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${destination.latitude},${destination.longitude}&waypoints=${waypointsStr}`;
     Linking.openURL(url);
-  } catch (err) {
-    console.error(err.message);
+  } catch (error) {
+    Toast.show({
+      type: "error",
+      text1: "Error Message!",
+      text2: error?.data?.message,
+    });
   }
 };
 
