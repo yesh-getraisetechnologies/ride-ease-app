@@ -42,8 +42,9 @@ const Home = () => {
         await saveAllActiveTrip(
           data.filter((item) => item?.tripId === data[0]?.tripId)
         );
+      } else{
+        await saveAllActiveTrip(data);
       }
-      await saveAllActiveTrip(data);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
